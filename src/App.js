@@ -19,9 +19,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      {isSignin && <Navigation />}
-      <div style={{ width: "100%" }}>
-        {isSignin && <TopBarComponent />}
+      {/* {isSignin && <Navigation />} */}
+       {/* <div style={{ width: "100%" }}> */}
+        {/* {isSignin && <TopBarComponent />} */} 
         <Routes>
           {/* Public Route */}
           <Route path="/" element={<SignIn setIsSignin={setIsSignin} />} />
@@ -33,7 +33,7 @@ function App() {
             <Route path="/Employee" element={<Employee />} />
           </Route>
         </Routes>
-      </div>
+      {/* </div> */}
     </BrowserRouter>
   );
 }
