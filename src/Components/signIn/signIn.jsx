@@ -43,7 +43,7 @@ export default function SignIn({setIsSignin}) {
       const token = responseJson.token;
       localStorage.setItem('token',token);
       setIsSignin(true);
-      navigate('/dashboard')
+      navigate('/CareerApplication')
       return responseJson;
 
   } catch (error) {
