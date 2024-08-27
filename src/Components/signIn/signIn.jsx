@@ -16,20 +16,8 @@ export default function SignIn() {
   };
   return (
     <div className="login-container">
-      <Card
-        title={
-          <div className="card-title">
-            <img
-              src="./hitech_logo.png"
-              alt="Logo"
-              className="card-title-image"
-            />
-            <span>Login</span>
-          </div>
-        }
-        bordered={false}
-        style={{ width: 300 }}
-      >
+      <img src="./hitech_logo.png" alt="LOGO" style={{marginBottom:"10px"}}/>
+      <Card title="Login" bordered={false} style={{ width: 300 }}>
         <Input
           placeholder="Email"
           style={{ marginBottom: 10 }}
