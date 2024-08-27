@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Button, Input, Card } from "antd";
 import "antd/dist/reset.css";
 import "./signIn.css";
-
-export default function SignIn() {
+import { notification } from "antd";
+import { useNavigate } from "react-router-dom";
+export default function SignIn({setIsSignin}) {
   const [signInData, setSignInData] = useState({
     email: "",
     password: "",
@@ -14,6 +15,42 @@ export default function SignIn() {
       [key]: value,
     });
   };
+  const navigate = useNavigate()
+  const signIn = async ()=>{
+    try {
+      const response = await fetch(`http://localhost:4040/api/users/signinV2`, {
+          method: 'POST',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              user: { email: signInData.email, password: signInData.password }
+          }),
+          credentials: 'include',
+      });
+
+      const responseJson = await response.json();
+    
+      if (!response.ok) {
+        // If response status is not 200, show an error notification
+        notification.error({
+          message: 'Sign In Failed',
+          description: 'You are not allowed to sign in here'
+        });
+        return;
+      }
+      const token = responseJson.token;
+      localStorage.setItem('token',token);
+      setIsSignin(true);
+      navigate('/dashboard')
+      return responseJson;
+
+  } catch (error) {
+      throw new Error(error.message);
+  }
+
+  }
   return (
     <div className="login-container">
       <Card
@@ -47,9 +84,7 @@ export default function SignIn() {
         <Button
           type="primary"
           block
-          onClick={() => {
-            console.log("sign in data ", signInData);
-          }}
+          onClick={signIn}
         >
           Login
         </Button>
