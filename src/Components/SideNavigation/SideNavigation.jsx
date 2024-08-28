@@ -1,8 +1,9 @@
-import React from "react";
+import React,{useState} from "react";
 import "./SideNavigationpanel.css";
 import { NavLink } from "react-router-dom";
 import HitechLogo from "./hitech_logo.png";
-
+import { Button } from "antd";
+import { MdMenu } from "react-icons/md";
 const links = [
     { path: "/CareerApplication", label: "Career Application" },
     { path: "/Employee", label: "Employee" },
@@ -10,9 +11,17 @@ const links = [
 ];
 
 const SideNavigation = () => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const handleToggle = () => {
+    setIsCollapsed(!isCollapsed);
+  };
     return (
+        <>
+       
         <section className="SideNavigation">
-            <div className="navigationPanel">
+        <div className="ToggleBtn"> <Button onClick={handleToggle}><MdMenu /></Button></div>
+            <div className={`navigationPanel ${isCollapsed ? 'collapsed' : ''}`}>
                 <div className="PortalLogoContainer">
                     <img src={HitechLogo} alt="HitechLogo" />
                 </div>
@@ -32,6 +41,7 @@ const SideNavigation = () => {
                 </div>
             </div>
         </section>
+        </>
     );
 };
 

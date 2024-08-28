@@ -1,0 +1,16 @@
+#Topbar {
+    width: 100%;
+    padding: 0px 70px;
+    height: 100%;
+    display: flex;
+    align-items: center
+}
+@media (max-width:769px){
+    #Topbar {
+        width: 100%;
+        padding: 0px 70px;
+        height: 100%;
+        display: flex;
+        align-items: center
+    }
+}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import "./TopBarComponent.css"
 const TopBarComponent = () => {
   const [greeting, setGreeting] = useState("");
 
@@ -17,7 +17,8 @@ const TopBarComponent = () => {
   
   return (
     <div className="CommonBar">
-      <div style={{width:"100%",padding:"0px 30px",height:"100%",display:"flex",alignItems:"center"}}>
+     
+      <div id="Topbar">
       {greeting}, Hitech
       </div>
     </div>

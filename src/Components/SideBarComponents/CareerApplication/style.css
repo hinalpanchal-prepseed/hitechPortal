@@ -22,3 +22,18 @@
 .PortalMainContainer .ant-col{
     padding: 4px 0px;
 }
+
+#CollapsePanel{
+  width: 100%;
+   display: flex;
+    justify-content: space-between;
+}
+@media (max-width:769px){
+    #CollapsePanel>div{
+        display: flex;
+        flex-direction: column;
+    }
+    .PortalMainContainer .ant-collapse-header{
+        padding: 7px !important;
+    }
+}

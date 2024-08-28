@@ -5,9 +5,15 @@ const Employee = () => {
   return (
     <>
       <Navigation />
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100%", backgroundColor: "#f0f2f5" }}>
         <TopBarComponent />
-        Employee Details
+        <div className="PortalMainContainer">
+          <div className="portalContainerHeader">
+            <h2 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "20px" }}> Employee Details</h2>
+          </div>
+
+        </div>
+
       </div>
     </>
   );

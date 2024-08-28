@@ -4,6 +4,14 @@
     background-color: white;
     color: black;
     border-right: 1px solid rgb(218, 220, 224);
+    transition: .5s;
+}
+
+.navigationPanel.collapsed {
+    width: 0px;
+    opacity:0;
+    visibility: hidden;
+    transition: .5s;
 }
 
 .PortalLogoContainer {
@@ -62,4 +70,14 @@
     /* Ensure it covers the entire div */
     border-radius: 8px;
     /* Optional: for rounded corners */
+}
+
+.SideNavigation {
+    position: relative;
+}
+
+.ToggleBtn {
+    position: absolute;
+    right: -55px;
+    top: 18px;
 }

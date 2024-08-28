@@ -83,15 +83,16 @@ const CareerApplication = () => {
     const filtered = data.filter(application => application.name === value);
     setFilteredData(filtered);
   };
+  
   return (
     <>
       <Navigation />
       <div style={{ width: "100%",backgroundColor:"#f0f2f5" }}>
         <TopBarComponent />
         <div className="PortalMainContainer">
-          <div style={{ padding: '20px' }}>
-            <div  >
-              <h2 style={{fontSize:"20px",fontWeight:"600"}}>Career Application</h2>
+          <div>
+            <div  className="portalContainerHeader">
+              <h2 style={{fontSize:"20px",fontWeight:"600",marginBottom:"20px"}}>Career Application</h2>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px",justifyContent:"end" }}>
               <AutoComplete
@@ -124,7 +125,7 @@ const CareerApplication = () => {
                     <Panel
                       header={
                         <>
-                          <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}><div><strong>Name:</strong> {application.name}</div><div> <strong>Position Applied For:</strong> {application.positionAppliedFor}</div></div>
+                          <div id="CollapsePanel"><div><strong>Name:</strong> {application.name}</div><div> <strong>Position Applied For:</strong> {application.positionAppliedFor}</div></div>
                         </>
                       }
                     >
