@@ -4,7 +4,7 @@ import "antd/dist/reset.css";
 import "./signIn.css";
 import { notification } from "antd";
 import { useNavigate } from "react-router-dom";
-export default function SignIn({setIsSignin}) {
+export default function SignIn({ setIsSignin }) {
   const [signInData, setSignInData] = useState({
     email: "",
     password: "",
@@ -16,22 +16,22 @@ export default function SignIn({setIsSignin}) {
     });
   };
   const navigate = useNavigate()
-  const signIn = async ()=>{
+  const signIn = async () => {
     try {
       const response = await fetch(`https://napi.prepseed.com/users/signinV2`, {
-          method: 'POST',
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              user: { email: signInData.email, password: signInData.password }
-          }),
-          credentials: 'include',
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: { email: signInData.email, password: signInData.password }
+        }),
+        credentials: 'include',
       });
 
       const responseJson = await response.json();
-    
+
       if (!response.ok) {
         // If response status is not 200, show an error notification
         notification.error({
@@ -41,19 +41,19 @@ export default function SignIn({setIsSignin}) {
         return;
       }
       const token = responseJson.token;
-      localStorage.setItem('token',token);
+      localStorage.setItem('token', token);
       setIsSignin(true);
       navigate('/CareerApplication')
       return responseJson;
 
-  } catch (error) {
+    } catch (error) {
       throw new Error(error.message);
-  }
+    }
 
   }
   return (
     <div className="login-container">
-      <img src="./hitech_logo.png" alt="LOGO" style={{marginBottom:"10px"}}/>
+      <img src="./hitech_logo.png" alt="LOGO" style={{ marginBottom: "10px" }} />
       <Card title="Login" bordered={false} style={{ width: 300 }}>
         <Input
           placeholder="Email"
