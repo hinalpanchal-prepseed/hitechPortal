@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "antd";
-import { Col, Card, Row, Spin, Alert, Collapse, Select, Input, AutoComplete } from "antd";
+import { Col, Card, Row, Spin, Alert, Button, Modal, Collapse, Select, Input, AutoComplete, Space } from "antd";
 import TopBarComponent from "../../TopBarComponent/TopBarComponent";
 import Navigation from "../../Navigation/Navigation";
+import * as XLSX from "xlsx";
 import "./style.css";
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -15,6 +16,27 @@ const CareerApplication = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [autoCompleteOptions, setAutoCompleteOptions] = useState([]);
+  const [releventExp, setReleventExp] = useState([])
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedExperience, setSelectedExperience] = useState('');
+  const handleOpenModal = (relevantExperience) => {
+    const formattedExperience = relevantExperience
+      .map(exp =>
+        Object.entries(exp)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(', ')
+      )
+      .join('; ');
+
+    setSelectedExperience(formattedExperience || 'N/A');
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedExperience('');
+  };
+
   // Step 2: Handle form submission and store the form data in state
   const handleFinish = (values) => {
     console.log("Form Data:", values);
@@ -25,14 +47,32 @@ const CareerApplication = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://napi.prepseed.com/hightech/getApplication');
+        const response = await fetch('http://localhost:4040/api/hightech/getApplication');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
 
         const result = await response.json();
         setData(result.applicatons);
-        setFilteredData(result.applicatons); // Set initial filtered data to all data
+        setFilteredData(result.applicatons);
+
+        const relevantExpValues = result.applicatons.map(e => {
+          // Extract key-value pairs from each relevantExperience object
+          const keyValuePairs = e.relevantExperience
+            .map(exp => {
+              return Object.entries(exp)
+                .map(([key, value]) => `${key}:${value}`)
+                .join(', '); // Join all pairs with commas
+            })
+            .join('; '); // Separate different experiences with a semicolon
+
+          console.log("Formatted Key-Value Pairs:", keyValuePairs);
+          return keyValuePairs;
+        });
+
+        // Update state with the computed values
+        console.log("Relevant Experience Values:", relevantExpValues);
+        setReleventExp(relevantExpValues);
       } catch (error) {
         setError(error.message);
       }
@@ -86,42 +126,235 @@ const CareerApplication = () => {
   };
   console.log("🔴🔴🔴🔴", filteredData)
 
+  const downloadFile = (url, fileName) => {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+      });
+  };
+
+
+  const downloadExcel = () => {
+    // Step 1: Create a new workbook
+    const workbook = XLSX.utils.book_new();
+
+    // Step 2: Convert your data into a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+    // Step 3: Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "CareerApplications");
+
+    // Step 4: Write the workbook to a file
+    XLSX.writeFile(workbook, "CareerApplications.xlsx");
+  };
+
+  const columns = [
+    {
+      title: 'S.NO.',
+      key: '_id',
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: 'DATE OF APPLICATION',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: text => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: 'Department Applied For',
+      dataIndex: 'departmentAppliedFor',
+      key: 'departmentAppliedFor',
+    },
+    {
+      title: 'Position Applied For',
+      dataIndex: 'positionAppliedFor',
+      key: 'positionAppliedFor',
+    },
+    {
+      title: 'Skill',
+      dataIndex: 'skill',
+      key: 'skill',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+    },
+    {
+      title: 'DOB',
+      dataIndex: 'dob',
+      key: 'dob',
+      render: text => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: 'Contact Number',
+      dataIndex: 'contactNumber',
+      key: 'contactNumber',
+    },
+    {
+      title: 'Alternate Number',
+      dataIndex: 'alternateContactNumber',
+      key: 'alternateContactNumber',
+    },
+    {
+      title: 'Email ID',
+      dataIndex: 'emailId',
+      key: 'emailId',
+    },
+    {
+      title: 'Qualification',
+      dataIndex: 'qualification',
+      key: 'qualification',
+    },
+    {
+      title: 'Current Company Name',
+      dataIndex: 'currentCompanyName',
+      key: 'currentCompanyName',
+    },
+    {
+      title: 'Current Company Designation',
+      dataIndex: 'currentDesignation',
+      key: 'currentDesignation',
+    },
+    {
+      title: 'Total Experience',
+      dataIndex: 'totalExperience',
+      key: 'totalExperience',
+    },
+    {
+      title: 'Relevant Experience',
+      key: 'relevantExperience',
+      render: (text, record) => {
+        // Format the relevant experience
+        const formattedExperience = record.relevantExperience
+          .map(exp =>
+            Object.entries(exp)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(', ')
+          )
+          .join('; ');
+
+        // If there's no relevant experience, return a dash
+        if (!formattedExperience || formattedExperience === 'N/A') {
+          return <span>-</span>;
+        }
+
+        // If relevant experience exists, return a clickable link
+        return (
+          <a onClick={() => handleOpenModal(record.relevantExperience)}>
+            View
+          </a>
+        );
+      },
+    },
+    {
+      title: 'Current Job Location',
+      dataIndex: 'currentLocation',
+      key: 'currentLocation',
+    },
+    {
+      title: 'Home Location',
+      dataIndex: 'home',
+      key: 'home',
+    },
+    {
+      title: 'Current CTC (Per Annum)',
+      dataIndex: 'currentCTC',
+      key: 'currentCTC',
+    },
+    {
+      title: 'Expected CTC (Per Annum)',
+      dataIndex: 'expectedCTC',
+      key: 'expectedCTC',
+    },
+    {
+      title: 'Notice Period (Days)',
+      dataIndex: 'noticePeriod',
+      key: 'noticePeriod',
+    },
+    {
+      title: 'Reference',
+      dataIndex: 'reference',
+      key: 'reference',
+    },
+    {
+      title: 'Remarks',
+      dataIndex: 'remarks',
+      key: 'remarks',
+    },
+    {
+      title: 'CV Open Option/Link',
+      key: 'cv',
+      render: (text, record) => {
+        const { name, resume, photo } = record;
+        return (
+          <Space size="middle">
+            <a
+              onClick={() => downloadFile(resume, `${name}_resume.pdf`)}
+              href="#!"
+              rel="noopener noreferrer"
+            >
+              View&nbsp;Resume
+            </a>
+            <a
+              onClick={() => downloadFile(photo, `${name}_photo.jpg`)}
+              href="#!"
+              rel="noopener noreferrer"
+            >
+              View&nbsp;Photo
+            </a>
+          </Space>
+        );
+      },
+    },
+  ];
+
   return (
     <>
       <Navigation />
-      <div style={{ width: "100%", backgroundColor: "#f0f2f5" }}>
+      <div style={{ width: "100%", backgroundColor: "#f0f2f5" }} id="RightSide">
         <TopBarComponent />
-        <div className="PortalMainContainer">
+        <div className="PortalMainContainer" >
           <div>
             <div className="portalContainerHeader">
               <h2 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "20px" }}>Career Application</h2>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "end" }} id="headerSelect">
+                <AutoComplete
+                  value={searchQuery}
+                  options={autoCompleteOptions}
+                  onSearch={handleSearch}
+                  onSelect={handleSelectSuggestion}
+                  style={{ marginBottom: 16, width: '200px' }}
+                  placeholder="Search Applications"
+                  allowClear
+                />
+                <Select
+                  placeholder="Select Position"
+                  onChange={handlePositionChange}
+                  allowClear
+                  style={{ marginBottom: 16, width: '200px' }}
+                >
+                  {uniquePositions.map((position) => (
+                    <Option key={position} value={position}>
+                      {position}
+                    </Option>
+                  ))}
+                </Select>
+                <Button type="primary" onClick={downloadExcel}>Download as Excel</Button>
+              </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "end" }}>
-              <AutoComplete
-                value={searchQuery}
-                options={autoCompleteOptions}
-                onSearch={handleSearch}
-                onSelect={handleSelectSuggestion}
-                style={{ marginBottom: 16, width: '200px' }}
-                placeholder="Search Applications"
-                allowClear
-              />
-              <Select
-                placeholder="Select Position"
-                onChange={handlePositionChange}
-                allowClear
-                style={{ marginBottom: 16, width: '200px' }}
-              >
-                {uniquePositions.map((position) => (
-                  <Option key={position} value={position}>
-                    {position}
-                  </Option>
-                ))}
-              </Select>
-
-            </div>
+<br />
             <Row gutter={24}>
-              {filteredData.map((application) => {
+              {/* {filteredData.map((application) => {
                 // Convert and format the application date
                 const date = new Date(application.createdAt);
                 const istDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
@@ -131,77 +364,25 @@ const CareerApplication = () => {
                 const dobDate = new Date(application.dob);
                 const istDob = new Date(dobDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
                 const formattedDob = istDob.toLocaleDateString('en-GB').replace(/\//g, '-');
-                return (
-                  <Col span={24} key={application._id}>
-                    <Collapse>
-                      <Panel
-                        header={
-                          <div id="CollapsePanel">
-                            <div><strong>Name:</strong> {application.name}</div>
-                            <div><strong>Position Applied For:</strong> {application.positionAppliedFor}</div>
-                          </div>
-                        }
-                      >
-                        <Card
-                        // cover={<img alt="photo" src={application.photo} />} // Uncomment if `photo` contains the image URL
-                        >
-                          <Meta
-                            description={
-                              <>
-                                <p><strong>Application Date:</strong> {formattedDate || '-'}</p>
-                                <p><strong>Department Applied For:</strong> {application.departmentAppliedFor || '-'}</p>
-                                <p><strong>Position Applied For:</strong> {application.positionAppliedFor || '-'}</p>
-                                <p><strong>Skill:</strong> {application.skill || '-'}</p>
-                                <p><strong>Name:</strong> {application.name || '-'}</p>
-                                <p><strong>Gender:</strong> {application.gender || '-'}</p>
-                                <p><strong>Date of Birth:</strong> {formattedDob || '-'}</p>
-                                <p><strong>Contact Number:</strong> {application.contactNumber || '-'}</p>
-                                <p><strong>Alternate Contact Number:</strong> {application.alternateContactNumber || '-'}</p>
-                                <p><strong>Email ID:</strong> {application.emailId || '-'}</p>
-                                <p><strong>Qualification:</strong> {application.qualification || '-'}</p>
-                                <p><strong>Current Company:</strong> {application.currentCompanyName || '-'}</p>
-                                <p><strong>Fresher:</strong> {application.fresher || '-'}</p>
-                                <p><strong>Current Company Designation:</strong> {application.currentDesignation || '-'}</p>
-                                <p><strong>Total Experience:</strong> {application.totalExperience || '-'} </p>
+                return ( */}
+              <Col span={24}>
+                <div style={{ width: "100%", overflow: "auto" }}>
+                  <Table columns={columns} dataSource={filteredData} rowKey="_id" />
+                  <Modal
+                    title="Relevant Experience"
+                    visible={isModalVisible}
+                    onOk={handleCloseModal}
+                    onCancel={handleCloseModal}
+                    footer={null}
+                  >
+                    <br />
+                    <p>{selectedExperience}</p>
+                  </Modal>
+                </div>
 
-                                <p><strong>Relevant Experience:</strong></p>
-                                {application && application.relevantExperience ? (
-                                  <ul style={{color:"black"}}>
-                                    <li>Residential: {application.relevantExperience[0].residential || '-'}</li>
-                                    <li>commercial: {application.relevantExperience[0].commercial || '-'}</li>
-                                    <li>Industrial: {application.relevantExperience[0].industrial || '-'}</li>
-                                    <li>Institutional: {application.relevantExperience[0].institutional || '-'}</li>
-                                    <li>Others: {application.relevantExperience[0].others || '-'}</li>
-                                  </ul>
-                                ) : (
-                                  <p>No relevant experience data available.</p>
-                                )}
-
-
-
-                                <p><strong>Current Job Location:</strong> {application.currentLocation || '-'}</p>
-                                <p><strong>Home Location:</strong> {application.home || '-'}</p>
-                                <p><strong>Current CTC:</strong> {application.currentCTC || '-'}</p>
-                                <p><strong>Expected CTC:</strong> {application.expectedCTC || '-'}</p>
-                                <p><strong>Notice Period:</strong> {application.noticePeriod || '-'}</p>
-                                <p><strong>Reference:</strong> {application.reference || '-'}</p>
-                                <p><strong>Reference of Friend:</strong> {application.referenceOfFriend || '-'}</p>
-                                <p><strong>Reference of Others:</strong> {application.referenceOfOthers || '-'}</p>
-                                <p><strong>Remarks:</strong> {application.remarks || '-'}</p>
-                                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                  <a href={application.resume} target="_blank" rel="noopener noreferrer">View Resume</a>
-                                  <br />
-                                  <a href={application.photo} target="_blank" rel="noopener noreferrer">View Photo</a>
-                                </div>
-                              </>
-                            }
-                          />
-                        </Card>
-                      </Panel>
-                    </Collapse>
-                  </Col>
-                );
-              })}
+              </Col>
+              {/* );
+              })} */}
 
             </Row>
 

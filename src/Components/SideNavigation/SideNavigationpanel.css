@@ -81,3 +81,9 @@
     right: -55px;
     top: 18px;
 }
+.absolute{
+    position: absolute;
+}
+.static{
+    position: static;
+}
