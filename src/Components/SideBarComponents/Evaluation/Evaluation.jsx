@@ -21,55 +21,56 @@ function Evaluation() {
 	const { Option } = Select;
 	const { Text, Title } = Typography;
 	const onFinish = values => {
-		console.log('Form values:', values);
+        console.log('Form values:', values);
+        addJobApplication(values)
 	};
-	// const addJobApplication = async data => {
-	// 	const {
-	// 		departement,
-	// 		position,
-	// 		fullName,
-	// 		contact,
-	// 		currentLocation,
-	// 		permanentLocation,
-	// 		latestQualification,
-	// 		totalExperiences,
-	// 		reference,
-	// 		noticePeriod,
-	// 	} = data;
+	const addJobApplication = async data => {
+		const {
+			department,
+			position,
+			fullName,
+			contactNumber,
+			currentLocation,
+			permanentLocation,
+			qualification,
+			experience,
+			reference,
+			noticePeriod,
+		} = data;
 
-	// 	const requestBody = {
-	// 		departement,
-	// 		position,
-	// 		fullName,
-	// 		contact,
-	// 		currentLocation,
-	// 		permanentLocation,
-	// 		latestQualification,
-	// 		totalExperiences,
-	// 		reference,
-	// 		noticePeriod,
-	// 	};
+		const requestBody = {
+			departement:department,
+			position,
+			fullName,
+			contact:contactNumber,
+			currentLocation,
+			permanentLocation,
+			latestQualification:qualification,
+			totalExperiences:experience,
+			reference,
+			noticePeriod,
+		};
+        console.log("requestbody", requestBody);
 
-	// 	try {
-	// 		const response = await fetch(`${apiBaseUrl}/hightech/addJobApplication`, {
-	// 			method: 'POST',
-	// 			credentials: 'include',
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 			},
-	// 			body: JSON.stringify(requestBody),
-	// 		});
+		try {
+			const response = await fetch(`http://localhost:4040/api/hightech/addJobApplication`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestBody),
+			});
 
-	// 		if (response.ok) {
-	// 			const responseData = await response.json();
-	// 			console.log('Job application added successfully:', responseData);
-	// 		} else {
-	// 			console.error('Error adding job application:', response.statusText);
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Request failed', error);
-	// 	}
-	// };
+			if (response.ok) {
+				const responseData = await response.json();
+				console.log('Job application added successfully:', responseData);
+			} else {
+				console.error('Error adding job application:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Request failed', error);
+		}
+	};
 
 	return (<>
           <Navigation />
