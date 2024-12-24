@@ -14,6 +14,8 @@ import {
 
 
 import React from 'react';
+import Navigation from '../../Navigation/Navigation';
+import TopBarComponent from '../../TopBarComponent/TopBarComponent';
 function Evaluation() {
 	const { TabPane } = Tabs;
 	const { Option } = Select;
@@ -69,19 +71,13 @@ function Evaluation() {
 	// 	}
 	// };
 
-	return (
-		<Card
-			bordered={false}
-			style={{
-				marginBottom: '10px',
-				border: '1px solid #d5e1f1',
-				borderRadius: '10px',
-				margin: '15px',
-				height: '90vh',
-				width: '100%',
-				overflow: 'auto',
-			}}
-		>
+	return (<>
+          <Navigation />
+      <div style={{ width: "100%", backgroundColor: "#f0f2f5" }}>
+        <TopBarComponent />
+        <div className="PortalMainContainer">
+          <div className="portalContainerHeader">
+        
 			<Tabs defaultActiveKey="1">
 				<TabPane tab="Info" key="1">
 					<Card>
@@ -514,7 +510,14 @@ function Evaluation() {
 					</Card>
 				</TabPane>
 			</Tabs>
-		</Card>
+		
+          </div>
+
+        </div>
+
+      </div>
+    </>
+		
 	);
 }
 
